@@ -2,12 +2,9 @@ import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import styles from "../styles/Home.module.css";
-import posts from "../public/posts.json";
-import { getAllPosts } from "../lib/api";
-import HeroPost from "../components/hero-post";
+import { getPostSlugs } from "../lib/api";
 
-export default function Home({ allPosts }: any) {
-  const heroPost = allPosts[0];
+export default function Home({ posts }: any) {
   return (
     <div className={styles.container}>
       <Head>
@@ -17,25 +14,13 @@ export default function Home({ allPosts }: any) {
       </Head>
 
       <main className={styles.main}>
-        {/* <div>
-          {posts.map((post) => (
-            <div key={post.id}>
-              <Link href={`/posts/${encodeURIComponent(post.id)}`}>
-                {post.title} {post.created_at}
-              </Link>
+        <div>
+          {posts.map((post: any) => (
+            <div key={post}>
+              <Link href={`/posts/${encodeURIComponent(post)}`}>{post}</Link>
             </div>
           ))}
-        </div> */}
-        {heroPost && (
-          <HeroPost
-            title={heroPost.title}
-            coverImage={heroPost.coverImage}
-            date={heroPost.date}
-            author={heroPost.author}
-            slug={heroPost.slug}
-            excerpt={heroPost.excerpt}
-          />
-        )}
+        </div>
       </main>
 
       <footer className={styles.footer}>
@@ -51,16 +36,10 @@ export default function Home({ allPosts }: any) {
 }
 
 export const getStaticProps = async () => {
-  const allPosts = getAllPosts([
-    "title",
-    "date",
-    "slug",
-    "author",
-    "coverImage",
-    "excerpt",
-  ]);
+  const allPosts = getPostSlugs();
+  const posts = allPosts.map((slug) => slug.replace(/\.mdx$/, ""));
 
   return {
-    props: { allPosts },
+    props: { posts },
   };
 };
